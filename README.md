@@ -31,6 +31,9 @@ jobs:
 The consuming repo must define a `CLAUDE_CODE_OAUTH_TOKEN` secret (generate with
 `claude setup-token`). Optional inputs: `claude_args`, `plugin_marketplaces`, `plugins`.
 
+Full setup, pinning, inputs, and troubleshooting:
+[`docs/using-the-review-workflow.md`](docs/using-the-review-workflow.md).
+
 ## `thermos` plugin
 
 A marketplace ([`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json))
