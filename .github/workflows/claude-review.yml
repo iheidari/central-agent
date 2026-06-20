@@ -1,0 +1,75 @@
+name: Claude PR Review
+
+# Reusable workflow. Other repos call it with:
+#
+#   jobs:
+#     review:
+#       uses: iheidari/central-agent/.github/workflows/claude-review.yml@main
+#       secrets:
+#         CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+#
+# It runs two skills against the PR's changes: /simplify (built-in) and
+# /thermos:thermos (the thermos plugin in this repo — see ./plugins/thermos
+# and ./.claude-plugin/marketplace.json).
+on:
+  workflow_call:
+    inputs:
+      claude_args:
+        description: "Extra CLI args passed to claude (e.g. --max-turns, --model)."
+        type: string
+        required: false
+        default: "--max-turns 25"
+      plugin_marketplaces:
+        description: "Newline-separated git URLs of plugin marketplaces that provide /thermos."
+        type: string
+        required: false
+        default: "https://github.com/iheidari/central-agent.git"
+      plugins:
+        description: "Newline-separated plugins to install, e.g. thermos@central-agent."
+        type: string
+        required: false
+        default: "thermos@central-agent"
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Skill 1: /simplify (built-in). Review-only — do not edit/commit, just comment.
+      - name: Simplify review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: ${{ inputs.claude_args }}
+          prompt: |
+            /simplify
+
+            Review only the files changed in this pull request. Do NOT modify or
+            commit code. Post each suggested simplification, reuse, or altitude
+            cleanup as an inline PR review comment with a file:line reference.
+            Be concise and lead with the highest-impact items.
+
+      # Skill 2: /thermos (loaded from the plugin declared above).
+      - name: Thermos review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: ${{ inputs.claude_args }}
+          plugin_marketplaces: ${{ inputs.plugin_marketplaces }}
+          plugins: ${{ inputs.plugins }}
+          prompt: |
+            /thermos:thermos
+
+            Scope the review to this pull request's diff. Post the synthesized
+            findings as inline PR review comments with file:line references,
+            highest-severity first.

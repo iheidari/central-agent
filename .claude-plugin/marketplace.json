@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "central-agent",
+  "description": "Shared Claude Code plugins reused across iheidari's repos.",
+  "owner": {
+    "name": "iheidari"
+  },
+  "plugins": [
+    {
+      "name": "thermos",
+      "description": "Combined thermo-nuclear review: launches a bug/security audit and a code-quality audit in parallel, then synthesizes the findings.",
+      "version": "1.0.0",
+      "source": "./plugins/thermos"
+    }
+  ]
+}

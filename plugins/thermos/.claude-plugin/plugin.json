@@ -1,0 +1,12 @@
+{
+  "name": "thermos",
+  "description": "Combined thermo-nuclear review: launches a bug/security audit and a code-quality audit in parallel, then synthesizes the findings.",
+  "version": "1.0.0",
+  "author": {
+    "name": "iheidari"
+  },
+  "agents": [
+    "./agents/thermo-nuclear-review-subagent.md",
+    "./agents/thermo-nuclear-code-quality-review-subagent.md"
+  ]
+}
